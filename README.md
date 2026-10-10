@@ -70,7 +70,7 @@ Tidak perlu memahami teknologi untuk mengikuti proyek ini. Baca **`PRD.md` §1**
 
 ### Catatan penting
 
-Ini adalah proyek latihan dan portofolio, **bukan representasi sistem produksi** dan bukan klaim bahwa seluruh prosedur LPK/SO telah dimodelkan secara lengkap. Seluruh detail sensitif dalam dokumen telah disamarkan untuk publikasi.
+Ini adalah proyek latihan dan portofolio, **bukan representasi sistem produksi** dan bukan klaim bahwa seluruh prosedur LPK/SO telah dimodelkan secara lengkap. Tidak ada DOKUEMEN detail SENSITIF dalam dokumen yang menjadi repo publikasi umum.
 
 ---
 
