@@ -447,6 +447,8 @@ flowchart TD
 
 Kanban **11 tahap**: `screening_mcu → diklat_bahasa → lulus_ujian → siap_matching → panggilan_mensetsu → lolos_interview → ttd_kontrak → pengajuan_coe → coe_terbit → visa_issued → tiket_berangkat`. Tiap perpindahan wajib ter-audit (BR-008).
 
+> **Cakupan PF-006:** tahap 1–3 di-set oleh **PF-001..004** (pendaftaran → kelas/drill → mock exam). PF-006 menggerakkan siswa **mulai dari gerbang `siap_matching` (tahap 4)** sampai keberangkatan — gerbangnya = BR-004 (sertifikat) **DAN** BR-006 (MCU Fit).
+
 **Trigger:** Gerbang kelayakan terpenuhi + kabar dari mitra Jepang.
 **Goal:** Siswa berangkat, gagal wawancara < 5%, jejak audit penuh (zero-deserter).
 
@@ -468,9 +470,9 @@ flowchart TD
         K1["Kirim status wawancara<br/>Goukaku / Shippai + dokumen"]
     end
     subgraph LANE_Y["Sistem"]
-        G1{"Gerbang BR-006 + BR-004:<br/>MCU Fit DAN lulus ujian?"}
+        G1{"Gerbang BR-004 + BR-006:<br/>sertifikat terbit DAN<br/>MCU hasil = fit?"}
         H1["Tahan — penuhi syarat dulu"]
-        Y1["Update tahap 1-4<br/>screening_mcu → diklat_bahasa<br/>→ lulus_ujian → siap_matching"]
+        Y1["Buka siap_matching<br/>(tahap 1-3 sudah di-set<br/>PF-001..004)"]
         Y2["Terima status mitra<br/>portal ringan IF-04"]
         G2{"Hasil Mensetsu<br/>Goukaku?"}
         H2["Gagal — pendampingan<br/>batch berikutnya"]
@@ -494,7 +496,7 @@ flowchart TD
 
 | Step | Actor | Action | System Response |
 |------|-------|--------|-----------------|
-| 1 | Sistem | Cek gerbang | MCU Fit + lulus ujian (BR-006) |
+| 1 | Sistem | Cek gerbang `siap_matching` | Sertifikat terbit (BR-004) + MCU `hasil='fit'` (BR-006) → buka tahap 4 |
 | 2 | Staff SO | Pindahkan kartu Kanban | Audit trail: `staff_user_id`, tanggal, catatan (BR-008) |
 | 3 | Staff SO | Generate Rirekisho | Ekspor CV JIS 1-klik → mitra |
 | 4 | Mitra | Kirim hasil Mensetsu | Sinkron status (IF-04) |
@@ -505,7 +507,7 @@ flowchart TD
 
 | Step | Condition | True Path | False Path |
 |------|-----------|-----------|------------|
-| G1 | MCU Fit + lulus ujian | Buka pipeline (BR-006) | Tahan |
+| G1 | Sertifikat terbit (BR-004) DAN MCU Fit (BR-006) | Buka `siap_matching` | Tahan |
 | G2 | Mensetsu Goukaku | Lanjut kontrak | Gagal → pendampingan batch berikutnya |
 | G3 | COE/visa diterima | Lanjut berangkat | Revisi & ajuk ulang |
 

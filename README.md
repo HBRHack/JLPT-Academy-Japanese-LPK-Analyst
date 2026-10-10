@@ -220,21 +220,24 @@ Siswa mendaftar & enroll level
    ↓
 Data master tersimpan (terenkripsi — BR-007)
    ↓
+Pipeline DIBUKA: screening_mcu (tahap 1) — MCU awal dicatat
+   ↓
 Presensi QR 2 moda → jam belajar terakumulasi (BR-011)
    ↓
-Drill SRS + materi → progress per level
+Drill SRS + materi → progress per level → diklat_bahasa (tahap 2)
    ↓
 Mock exam → timer adaptif per section (BR-002)
    ↓
-Skor dihitung: total ≥ ambang DAN sectional ≥ ambang (BR-003)
+Skor: total ≥ ambang DAN sectional ≥ ambang (BR-003) → lulus_ujian (tahap 3)
    ↓
-MCU dinyatakan Fit? (BR-006)  ── Unfit ──► skema banding [OPEN]
-   ↓ Fit
 Invoice: lunas / DP+angsuran / dormant (BR-012)
    ↓ lunas (BR-004)
 Sertifikat terbit + bukti 150–300 jam (BR-005)
    ↓
-Pipeline 11 tahap → matching → Mensetsu → COE → visa → berangkat
+GERBANG siap_matching (tahap 4) ← sertifikat (BR-004) DAN MCU Fit (BR-006)
+   └── Unfit ──► skema banding [OPEN]
+   ↓
+Matching → Mensetsu → Kontrak → COE → visa → berangkat (tahap 5–11)
    ↓
 Setiap perpindahan Kanban diaudit (BR-008)
    ↓
@@ -299,7 +302,7 @@ Model ini sengaja dibatasi agar dapat dikerjakan sebagai *solo-project* dan teta
 **Beberapa hal yang belum dimodelkan secara penuh antara lain:**
 
 - **chapter BAB-1..8 belum digarap** — Use Case & Process Flow detail per chapter masih menyusul; karena itu FR atomik masih 12 (global), bukan ratusan
-- inkonsistensi gerbang di state machine (A5, `PRD.md` §11) — **baru terdeteksi & belum diputuskan**
+- ~~inkonsistensi gerbang di state machine (A5)~~ → **SUDAH DIPERBAIKI (v0.3)** — gerbang BR-004+BR-006 dipindah ke `lulus_ujian → siap_matching`
 - jalur **banding MCU Unfit** (PF-005) — masih *open*
 - **rematch** setelah gagal Mensetsu (PF-006) — masih *open*
 - **batas maksimum periode dormant** (PF-007) — masih *open*

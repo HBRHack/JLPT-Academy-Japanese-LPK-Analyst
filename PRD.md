@@ -119,7 +119,7 @@ flowchart TD
 ### 4.5 Modul Diklat Asrama & MCU *(Tahap 3)*
 * **Manajemen Asrama:** Alokasi kamar, karta piket, kapasitas 150–300 siswa serentak.
 * **Kesamaptaan Fisik:** Rekam push-up/lari sebagai catatan pembinaan.
-* **Status MCU Akhir:** Gerbang `fit` → buka akses pipeline (BR-006).
+* **Status MCU Akhir:** Gerbang `fit` → buka akses `siap_matching` & setelahnya (BR-006).
 
 ### 4.6 Modul Talent Pipeline & Penyaluran *(Tahap 3)*
 * **Kanban 11 Tahap:** `screening_mcu` → `diklat_bahasa` → `lulus_ujian` → `siap_matching` → `panggilan_mensetsu` → `lolos_interview` → `ttd_kontrak` → `pengajuan_coe` → `coe_terbit` → `visa_issued` → `tiket_berangkat`.
@@ -151,10 +151,10 @@ Perpindahan tahap dikelola sebagai *finite state machine* dengan **gerbang keras
 
 | Status Asal | Event Pemicu | Status Tujuan | Keterangan & Aksi Sistem |
 |---|---|---|---|
-| `[*] (Baru)` | Siswa memenuhi gerbang BR-006 + BR-004 | `screening_mcu` | MCU Fit + lulus ujian → pipeline dibuka. |
+| `[*] (Baru)` | Siswa enroll & berkas pendaftaran lengkap | `screening_mcu` | Pipeline dibuka saat mendaftar — **belum ada gerbang BR** di sini, supaya seluruh perjalanan siswa terlacak (traceability). |
 | `screening_mcu` | Staf SO konfirmasi berkas MCU lengkap | `diklat_bahasa` | Memulai fase diklat bahasa intensif. |
 | `diklat_bahasa` | `mock_exam.result = 'lulus'` | `lulus_ujian` | Lulus total + sectional (BR-003). |
-| `lulus_ujian` | Sertifikat internal terbit (BR-004) | `siap_matching` | Layak masuk antrean penempatan. |
+| `lulus_ujian` | **Sertifikat terbit (BR-004) DAN MCU `hasil='fit'` (BR-006)** | `siap_matching` | **Dua gerbang gabungan** — modul selesai + mock lulus + biaya lunas, **dan** MCU Fit. `business-rules.md`: BR-006 mengunci `siap_matching`/setelahnya. |
 | `siap_matching` | Kumiai/TSK kirim pemanggilan | `panggilan_mensetsu` | Jadwal wawancara kerja ditetapkan. |
 | `panggilan_mensetsu` | Hasil wawancara = **Goukaku** | `lolos_interview` | Gagal (*Shippai*) → kembali pendampingan batch berikutnya. |
 | `lolos_interview` | Kontrak kerja ditandatangani | `ttd_kontrak` | Kewajiban & penempatan disepakati. |
@@ -163,7 +163,7 @@ Perpindahan tahap dikelola sebagai *finite state machine* dengan **gerbang keras
 | `coe_terbit` | Visa diterbitkan | `visa_issued` | Tiket disiapkan. |
 | `visa_issued` | Siswa berangkat | `tiket_berangkat` | Menjadi **alumni**; terminal state (zero-deserter). |
 
-> ⚠️ **Inkonsistensi terdeteksi (belum diputuskan):** baris pertama mensyaratkan **BR-004 (biaya lunas + lulus ujian)** untuk *masuk* `screening_mcu`, padahal BR-004 baru dipakai di transisi `lulus_ujian → siap_matching` (baris 4) dan `lulus_ujian` baru tercapai di baris 3. Gerbang di baris 1 diduga dobel/mendahului — lihat §11 Open Questions.
+> ✅ **Diperiksa & diperbaiki (v0.3):** versi sebelumnya menaruh gerbang **BR-004 + BR-006 di transisi `[*] Baru → screening_mcu`** — itu *circular*, karena `lulus_ujian` (syarat BR-004) baru tercapai di tahap 3, sedangkan `screening_mcu` adalah tahap 1. Tahap 2 & 3 jadi tak tercapai. Gerbang kini dipindah ke `lulus_ujian → siap_matching`, sesuai `business-rules.md` (BR-006 → `siap_matching`/setelahnya) dan BR-004 (gerbang terbit sertifikat). Rujukan: `PROCESS-FLOW-MASTER.md` relationship map `PF-005 --gates--> PF-006`.
 
 ---
 
@@ -318,7 +318,7 @@ Demi menjaga fokus desain analisis, hal berikut **eksplisit dipotong** dari ling
 | A2 | Payment gateway: **Midtrans** vs **Xendit** | **Ditunda (by design)** — dipilih saat implementasi |
 | A3 | Entitas "Batch" (kelas) vs Diklat (karantina) | **SELESAI — DIPISAH**: `kelas.nama_batch` vs `diklat_session.kode_angkatan` |
 | A4 | Sumber dana talangan | **SELESAI — MULTI-SUMBER**: koperasi mitra, internal LPK, donasi pemerintah, mitra lain |
-| **A5** | **Gerbang transisi `[*] Baru → screening_mcu`** — baris 1 §5 mensyaratkan BR-004 yang baru relevan di `lulus_ujian → siap_matching` | **OPEN — inkonsistensi terdeteksi saat restrukturisasi v0.3, belum diputuskan** |
+| **A5** | Gerbang transisi `[*] Baru → screening_mcu` semula mensyaratkan BR-004 + BR-006 | **SELESAI — DIPERBAIKI (v0.3):** gerbang dipindah ke `lulus_ujian → siap_matching`, sesuai definisi BR-004 & BR-006 di `business-rules.md` + relationship map `PROCESS-FLOW-MASTER.md`. Diperbaiki di 3 tempat: PRD §5, PF-006 (diagram + 2 tabel), README §6. |
 
 **Open question turunan dari process flow** (tercatat di `PROCESS-FLOW-MASTER.md`):
 
